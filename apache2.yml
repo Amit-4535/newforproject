@@ -1,0 +1,18 @@
+---
+- name: install and restart apache2 service on node1 and node2
+  hosts: demo
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Install apache2
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Restart apache2
+      service:
+        name: apache2
+        state: restarted
+
