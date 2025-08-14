@@ -6,7 +6,7 @@ pipeline {
     }
 
     stages {
-        
+
         stage('Checkout Code') {
             steps {
                 echo "Pulling latest code from GitHub..."
@@ -23,12 +23,12 @@ pipeline {
             }
         }
 
-        stage('Deploy HTML to Nodes') {
+        stage('Deploy All Files to Nodes') {
             steps {
-                echo "Deploying HTML files to /var/www/html on node1 and node2..."
+                echo "Deploying all files from GitHub repo to /var/www/html on node1 and node2..."
                 sh '''
                     ansible all -i /etc/ansible/hosts -m copy \
-                        -a "src=index.html dest=/var/www/html/index.html owner=www-data group=www-data mode=0644"
+                        -a "src=. dest=/var/www/html owner=www-data group=www-data mode=0644 recurse=yes"
                 '''
             }
         }
@@ -36,11 +36,11 @@ pipeline {
 
     post {
         success {
-            echo "Deployment completed successfully!"
+            echo "Deployment completed successfully! Open browser on node1/node2 IP to check."
         }
         failure {
             echo "Deployment failed. Please check the logs."
         }
     }
 }
-   
+
