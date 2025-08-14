@@ -27,8 +27,8 @@ pipeline {
             steps {
                 echo "Deploying all files from GitHub repo to /var/www/html on node1 and node2..."
                 sh '''
-                    ansible all -i /etc/ansible/hosts -m copy \
-                        -a "src=. dest=/var/www/html owner=www-data group=www-data mode=0644 recurse=yes"
+                    ansible all -i /etc/ansible/hosts -m synchronize \
+                        -a "src=. dest=/var/www/html recursive=yes delete=yes"
                 '''
             }
         }
