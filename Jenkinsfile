@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    environment {
+        ANSIBLE_HOST_KEY_CHECKING = 'False'  // Skip host key checking
+    }
+
+    stages {
+        
+        stage('Checkout Code') {
+            steps {
+                echo "Pulling latest code from GitHub..."
+                git branch: 'master', url: 'https://github.com/Amit-4535/newforproject.git'
+            }
+        }
+
+        stage('Run Ansible Playbook - Install Apache2') {
+            steps {
+                echo "Running Ansible Playbook to install & restart Apache2..."
+                sh '''
+                    ansible-playbook -i /etc/ansible/hosts apache2.yml
+                '''
+            }
+        }
+
+        stage('Deploy HTML to Nodes') {
+            steps {
+                echo "Deploying HTML files to /var/www/html on node1 and node2..."
+                sh '''
+                    ansible all -i /etc/ansible/hosts -m copy \
+                        -a "src=index.html dest=/var/www/html/index.html owner=www-data group=www-data mode=0644"
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Deployment completed successfully!"
+        }
+        failure {
+            echo "Deployment failed. Please check the logs."
+        }
+    }
+}
+   
